@@ -7,7 +7,7 @@ import { toAsk, httpInject } from "@builderbot-plugins/openai-assistants"
 import { typing } from "./utils/presence"
 
 const PORT = process.env?.PORT ?? 3008
-const ASSISTANT_ID = process.env?.ASSISTANT_ID ?? ''
+const ASSISTANT_ID = process.env?.ASSISTANT_ID ?? 'asst_CefzVkM2h46pY3dZ6DZVheS4'
 
 const welcomeFlow = addKeyword<Provider, Database>(EVENTS.WELCOME)
     .addAction(async (ctx, { flowDynamic, state, provider }) => {

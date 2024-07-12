@@ -10,3 +10,4 @@ tmp/*
 
 *.log
 *qr.png
+src/**/serviceAccountKey.json

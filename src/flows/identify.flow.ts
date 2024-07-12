@@ -52,7 +52,7 @@ const identifyByFhoneFlow = addKeyword(utils.setEvent('IDENTIFY_FLOW')).addActio
         await state.update({ persona: persona })
         }
     //clearHistory(state)
-    await flowDynamic('Bienvenido '+  persona.nombres)
+    await flowDynamic('De acuerdo '+  persona.nombres)
     return gotoFlow(flowConfirm)
 
 })

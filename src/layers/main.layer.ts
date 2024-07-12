@@ -47,4 +47,6 @@ export default async (_: BotContext, { state, gotoFlow, extensions }: BotMethods
     if (prediction.includes('HABLAR')) return gotoFlow(flowSeller)
     if (prediction.includes('AGENDAR')) return gotoFlow(flowSchedule)
     if (prediction.includes('CONFIRMAR')) return gotoFlow(flowConfirm)
+    else return gotoFlow(flowSchedule)
+
 }

@@ -7,6 +7,7 @@ import { getFullCurrentDate } from "src/utils/currentDate";
 import { flowConfirm } from "./confirm.flow";
 import { addMinutes, isWithinInterval, format, parse } from "date-fns";
 import { identifyByFhoneFlow } from "./identify.flow";
+import { flowSeller } from "./seller.flow";
 
 const DURATION_MEET = process.env.DURATION_MEET ?? 45
 
@@ -112,8 +113,10 @@ try{
 
     if (body.toLowerCase().includes('si')) return gotoFlow(identifyByFhoneFlow)
 
-    await flowDynamic('¿Alguna otra fecha y hora?')
+    //await flowDynamic('¿Alguna otra fecha y hora?')
     await state.update({ desiredDate: null })
+    return gotoFlow(flowSeller)
+
 })
 
 export { flowSchedule }

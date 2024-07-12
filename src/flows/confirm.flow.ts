@@ -65,14 +65,8 @@ const notClientFlowConfirm = addKeyword(EVENTS.ACTION).addAction(async (_, { flo
          await flowDynamic('Listo! agendado Buen dia')
     })
           
-    const isClientFlowConfirm = addKeyword(EVENTS.ACTION)
-      .addAnswer('Ok, voy a pedirte unos datos para agendar, escribe "cancelar" para salir')
-      .addAction(async (_, {flowDynamic, state}) => {
-        const persona = state.get('persona')
-        console.log('persona', persona)
-        await flowDynamic(`¿Tu nombres es: ${persona.nombres} ${persona.apellidos} ?`)
-        
-    }).addAction({ capture: true }, async (ctx, { state, flowDynamic, endFlow }) => {
+    const isClientFlowConfirm = addKeyword(EVENTS.ACTION).
+    addAction(async (ctx, { state, flowDynamic, endFlow }) => {
         const persona = state.get('persona')
         const dateObject = {
             name: persona.nombres+persona.apellidos,
@@ -87,12 +81,18 @@ const notClientFlowConfirm = addKeyword(EVENTS.ACTION).addAction(async (_, { flo
             await flowDynamic(`¿Como puedo ayudarte?`)
     
         }
-        if (ctx.body.toLocaleLowerCase().includes('si')) {
-            await appToCalendar(dateObject);
+        console.log('antes de confirmacion')
+        try{
 
-            await flowDynamic(`Listo! agendado Buen dia`)
+            await appToCalendar(dateObject);
+            clearHistory(state)
+            await flowDynamic(`${persona.nombres}, tu cita ha sido agendada, buen dia`)
+        } catch (error) {
+
+            await flowDynamic(`${persona.nombres}, hubo un fallo al confirmar tu cita`)
         }
-        await flowDynamic(`¿Tus datos han sido mal ingresados?`)
+            
+        
     
     })
 

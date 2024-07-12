@@ -28,10 +28,7 @@ const flowSeller = addKeyword<Provider, Database>(EVENTS.WELCOME)
             await flowDynamic([{ body: chunk.trim(), delay: generateTimer(150, 250) }]);
         }
 
-       //const chunks = response.split(/\n\n+/);
-for (const chunk of chunks) {
-    await flowDynamic([{ body: chunk.trim() }]);
-}
+       
     })
 
 

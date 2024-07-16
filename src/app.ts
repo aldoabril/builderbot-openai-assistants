@@ -9,7 +9,7 @@ import AIClass from './services/ai';
 import flow from './flows';
 
 const PORT = process.env?.PORT ?? 3008
-const ai = new AIClass(process.env.OPEN_API_KEY, 'gpt-3.5-turbo-0125')
+const ai = new AIClass(process.env.OPENAI_API_KEY, 'gpt-3.5-turbo-0125')
 
 const main = async () => {
     const adapterProvider = createProvider(Provider)

@@ -9,7 +9,7 @@ import { addMinutes, isWithinInterval, format, parse } from "date-fns";
 import { identifyByFhoneFlow } from "./identify.flow";
 import { flowSeller } from "./seller.flow";
 
-const DURATION_MEET = process.env.DURATION_MEET ?? 45
+const DURATION_MEET = process.env.DURATION_MEET ?? 30
 
 const PROMPT_FILTER_DATE = `
 ### Contexto

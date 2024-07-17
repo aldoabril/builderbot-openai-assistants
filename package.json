@@ -20,6 +20,7 @@
     "dotenv": "^16.4.5",
     "firebase": "^10.12.3",
     "firebase-admin": "^12.2.0",
+    "googleapis": "^140.0.1",
     "openai": "^4.52.7"
   },
   "devDependencies": {

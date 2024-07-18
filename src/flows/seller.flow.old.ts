@@ -4,9 +4,9 @@ import { getHistory, getHistoryParse, handleHistory } from "../utils/handleHisto
 import AIClass from "../services/ai";
 import { getFullCurrentDate } from "src/utils/currentDate";
 import { pdfQuery } from "src/services/pdf";
-import Usuario from "src/services/user"
-const usuario = new Usuario()
+import { getPatientByPhone } from "~/services/calendar";
 const EMPRESA_ID = process.env.EMPRESA_ID
+import {Usuario} from "~/types/usuario";
 const PROMPT_SELLER2 =  `Eres el asistente virtual de Clarus Dent, ayudas a concretar citas en link de Google Calendar e informar a los clientes acerca de los servicios y campañas promocionales.
 ### DATOS DEL CLIENTE
 {CLIENT_DATA}
@@ -99,9 +99,9 @@ const flowSeller = addKeyword(EVENTS.ACTION)
     .addAnswer(`⏱️`)
     .addAction(async (ctx, { state, flowDynamic, extensions }) => {
         try {
-            let user: Usuario;
+            let user;
             if (!state.get('persona'))
-             user = await usuario.getUsuarioByPhone(ctx.from,EMPRESA_ID)
+             user = await getPatientByPhone(ctx.from,EMPRESA_ID)
             else
             user = state.get('persona')
             

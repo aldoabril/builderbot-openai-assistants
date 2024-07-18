@@ -1,11 +1,11 @@
 import { addKeyword, EVENTS, utils} from "@builderbot/bot";
 import { clearHistory } from "../utils/handleHistory";
-import Usuario from "src/services/user";
 import { flowSeller } from "./seller.flow";
 import { registerFlow } from "./register.flow";
 import { flowConfirm } from "./confirm.flow";
+import {getPatientByPhone} from "src/services/calendar"
+import { pseudoRandomBytes } from "crypto";
 
-const usuario = new Usuario()
 const EMPRESA_ID = process.env.EMPRESA_ID || "hIntsAEzBwy8Hwi4DNcf"
 /**
  * Encargado de pedir los datos necesarios para registrar el evento en el calendario
@@ -22,7 +22,7 @@ const identifyFlow = addKeyword(utils.setEvent('IDENTIFY_FLOW')).addAction(async
     await state.update({ dni: ctx.body })
     
     const empresaId = process.env.EMPRESA_ID||"hIntsAEzBwy8Hwi4DNcf"
-    const persona = await usuario.getUsuario(state.get('dni'), empresaId)
+    const persona = await getPatientByPhone(ctx.from, empresaId)
     if (!persona) {
 
             await flowDynamic('Aun no eres cliente!') 
@@ -41,7 +41,8 @@ const identifyFlow = addKeyword(utils.setEvent('IDENTIFY_FLOW')).addAction(async
 const identifyByFhoneFlow = addKeyword(utils.setEvent('IDENTIFY_FLOW')).addAction(async (ctx, { state,flowDynamic, gotoFlow }) => {
     const telefono = ctx.from
     
-    const persona = await usuario.getUsuarioByPhone(telefono, EMPRESA_ID)
+    const persona = await getPatientByPhone(telefono, EMPRESA_ID)
+    console.log('persona identificada', persona)
     if (!persona) {
 
             await flowDynamic('Aun no eres cliente!') 

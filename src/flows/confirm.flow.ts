@@ -2,7 +2,7 @@ import { addKeyword, EVENTS, utils } from "@builderbot/bot";
 import { clearHistory } from "../utils/handleHistory";
 import { addMinutes, format } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
-import { appToCalendar } from "src/services/calendar";
+import { appToCalendar,insertEventToGoogleCalendar } from "src/services/calendar";
 
 
 const DURATION_MEET = process.env.DURATION_MEET ?? 45
@@ -28,7 +28,7 @@ const flowConfirm = addKeyword(EVENTS.ACTION).addAnswer(`⏱️`).addAction(asyn
 
 const notClientFlowConfirm = addKeyword(EVENTS.ACTION).addAction(async (_, { flowDynamic }) => {
     await flowDynamic('Ok, voy a pedirte unos datos para agendar, escribe "cancelar" para salir')
-        await flowDynamic('¿Cual es tu nombre?')
+        await flowDynamic('¿Cual es tu numero de DNI?')
     
 }).addAction({ capture: true }, async (ctx, { state, flowDynamic, endFlow }) => {
     const persona = state.get('persona')
@@ -59,7 +59,8 @@ const notClientFlowConfirm = addKeyword(EVENTS.ACTION).addAction(async (_, { flo
             endData: utcToZonedTime(addMinutes(state.get('desiredDate'), +DURATION_MEET), TIME_ZONE),
             phone: ctx.from
         }
-        appToCalendar(dateObject);
+        console.log('persona', dateObject)
+        await insertEventToGoogleCalendar(dateObject);
 
         clearHistory(state)
          await flowDynamic('Listo! agendado Buen dia')
@@ -81,10 +82,10 @@ const notClientFlowConfirm = addKeyword(EVENTS.ACTION).addAction(async (_, { flo
             await flowDynamic(`¿Como puedo ayudarte?`)
     
         }
-        console.log('antes de confirmacion')
+        console.log('antes de confirmacion', dateObject)
         try{
 
-            await appToCalendar(dateObject);
+            await insertEventToGoogleCalendar(dateObject);
             clearHistory(state)
             await flowDynamic(`${persona.nombres}, tu cita ha sido agendada, buen dia`)
         } catch (error) {

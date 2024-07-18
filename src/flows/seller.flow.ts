@@ -8,8 +8,6 @@ import { typing } from "src/utils/presence"
 import { toAsk, httpInject, run  } from "@builderbot-plugins/openai-assistants"
 import { getFullCurrentDate } from "src/utils/currentDate";
 import { pdfQuery } from "src/services/pdf";
-import Usuario from "src/services/user"
-const usuario = new Usuario()
 const EMPRESA_ID = process.env.EMPRESA_ID
 const ASSISTANT_ID = process.env?.ASSISTANT_ID ?? 'asst_CefzVkM2h46pY3dZ6DZVheS4'
 

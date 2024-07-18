@@ -2,7 +2,7 @@ import { addKeyword, EVENTS } from "@builderbot/bot";
 import AIClass from "../services/ai";
 import { getHistoryParse, handleHistory } from "../utils/handleHistory";
 import { generateTimer } from "../utils/generateTimer";
-import { getCurrentCalendar } from "../services/calendar";
+import { getCurrentCalendar, getGoogleCalendarEvents } from "../services/calendar";
 import { getFullCurrentDate } from "src/utils/currentDate";
 import { flowConfirm } from "./confirm.flow";
 import { addMinutes, isWithinInterval, format, parse } from "date-fns";

@@ -17,6 +17,36 @@ const getCurrentCalendar = async (): Promise<{ start: string, end: string }[]> =
     return list
 }
 
+async function getGoogleCalendarEvents(accessToken:string, startDate:Date, endDate:Date, calendarId: string) {
+    try {
+        
+        const response = await fetch(
+            `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?timeMin=${startDate.toISOString()}&timeMax=${endDate.toISOString()}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            }
+        );
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log("Eventos de Google Calendar:", data);
+            const todayEvents = data.items.filter((event) => event.start.dateTime);
+            return todayEvents;
+        } else {
+            console.error('Error al recuperar eventos:', response.statusText);
+
+            
+            throw new Error('Error al recuperar eventos de Google Calendar');
+        }
+    } catch (error) {
+        console.error('Error al procesar la solicitud:', error);
+        throw new Error('Error al procesar la solicitud');
+    }
+}
+
+
 /**
  * add to calendar
  * @param body 
@@ -37,4 +67,4 @@ const appToCalendar = async (payload: { name: string, email: string, startDate: 
     }
 }
 
-export { getCurrentCalendar, appToCalendar }
+export { getCurrentCalendar, appToCalendar, getGoogleCalendarEvents }

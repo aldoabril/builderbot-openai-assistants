@@ -15,4 +15,13 @@ const getFullCurrentDate = (): string => {
 
 }
 
+function calculateDateRange(fecha: Date) {
+    const lastDayOfMonth = new Date(fecha.getFullYear(), fecha.getMonth() + 1, 0);
+    const oneWeekBefore = new Date(fecha.getFullYear(), fecha.getMonth(), 1);
+    oneWeekBefore.setDate(oneWeekBefore.getDate() - 7);
+
+    return { startDate: oneWeekBefore, endDate: lastDayOfMonth };
+}
+
+
 export { getFullCurrentDate }

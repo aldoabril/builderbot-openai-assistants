@@ -13,7 +13,7 @@ const PORT = process.env?.PORT ?? 3008
 const ai = new AIClass(process.env.OPENAI_API_KEY, 'gpt-3.5-turbo-0125')
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const GOOGLE_REDIRECT_URI = process.env.GOOGLE_CALLBACK_URL;
+const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
 
 const main = async () => {
     const adapterProvider = createProvider(Provider)
@@ -49,7 +49,8 @@ const main = async () => {
             console.log(ex)
         }
     }))
-    adapterProvider.server.post('/v1/auth-google-calendar', handleCtx(async (bot, req, res) => {
+    adapterProvider.server.post('/v1/auth-google-calendar',  handleCtx(async (bot, req, res ) => {
+        console.log('entro a auth google calendar ', GOOGLE_REDIRECT_URI)
         const oauth2Client = new google.auth.OAuth2(
             GOOGLE_CLIENT_ID,
             GOOGLE_CLIENT_SECRET,
@@ -61,15 +62,31 @@ const main = async () => {
 
             const { tokens } = await oauth2Client.getToken(code);
             const {access_token, refresh_token} = tokens
-            // const response = await fetch(
-            //     `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${startDate.toISOString()}&timeMax=${endDate.toISOString()}`,
-            //     {
-            //         headers: {
-            //         },
-            //     }
-            // );
+            
+            bot.globalState().update(state => ({ ...state, access_token, refresh_token }))
+            //const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${startDate.toISOString()}&timeMax=${endDate.toISOString()}`
+            const url = `https://www.googleapis.com/calendar/v3/calendars/e67a7e50ccc11c8f4cd21f071c5f200a71b30c0ee0f9510a44266bd7ae504f96@group.calendar.google.com/events`
+            const response = await fetch(
+                url,
+                {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                }
+            );
+         
+        oauth2Client.setCredentials(tokens);
 
-        console.log(tokens)
+        oauth2Client.on('tokens', (tokens) => {
+            if (tokens.refresh_token) {
+              // store the refresh_token in my database!
+              console.log(tokens.refresh_token);
+            }
+            console.log(tokens.access_token);
+          });
+
+
+        //console.log(await response.json())
 
         
         }catch(ex){

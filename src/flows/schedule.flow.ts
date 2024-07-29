@@ -10,7 +10,7 @@ import { identifyByFhoneFlow } from "./identify.flow";
 import { flowSeller } from "./seller.flow";
 
 const DURATION_MEET = process.env.DURATION_MEET ?? 30
-
+const EMPRESA_ID = process.env.EMPRESA_ID?? 'hIntsAEzBwy8Hwi4DNcf'
 const PROMPT_FILTER_DATE = `
 ### Contexto
 Eres un asistente de inteligencia artificial. Tu propósito es determinar la fecha y hora que el cliente quiere, en el formato yyyy/MM/dd HH:mm:ss.
@@ -33,7 +33,48 @@ const generatePromptFilter = (history: string) => {
     return mainPrompt;
 }
 
-const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (_, { extensions, state, flowDynamic, endFlow }) => {
+function isWithinAvailability(date) {
+    const day = date.getDay(); // 0 (domingo) a 6 (sábado)
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    // Definir los intervalos de tiempo
+    const morningStart = new Date(date);
+    morningStart.setHours(8, 0, 0, 0);
+
+    const morningEnd = new Date(date);
+    morningEnd.setHours(13, 0, 0, 0);
+
+    const afternoonStart = new Date(date);
+    afternoonStart.setHours(15, 0, 0, 0);
+
+    const afternoonEnd = new Date(date);
+    afternoonEnd.setHours(19, 0, 0, 0);
+
+    // Verificar disponibilidad para días de semana (lunes a viernes)
+    if (day >= 1 && day <= 5) {
+        if (date >= morningStart && date < morningEnd) {
+            return true;
+        }
+        if (date >= afternoonStart && date < afternoonEnd) {
+            return true;
+        }
+    }
+
+    // Verificar disponibilidad para sábado
+    if (day === 6) {
+        if (date >= morningStart && date < morningEnd) {
+            return true;
+        }
+    }
+
+    // No está dentro de los horarios disponibles
+    return false;
+}
+
+
+
+const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (_, { extensions, state, flowDynamic, fallBack, endFlow }) => {
     await flowDynamic('Dame un momento para consultar la agenda...');
     const ai = extensions.ai as AIClass;
     const history = getHistoryParse(state);
@@ -54,13 +95,8 @@ const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (_, { extensions,
           start: '2024-07-06T08:30:00.000Z'
         }
       ]
-    const list = await getCurrentCalendar()
-
-    const listParse = list
-        .map(({ start, end }) => ({ fromDate: new Date(start), toDate: new Date(end) }));
-
-    console.log({ listParse })
-
+    //const list = await getCurrentCalendar()
+    
     const promptFilter = generatePromptFilter(history);
 
     const { date } = await ai.desiredDateFn([
@@ -77,17 +113,33 @@ const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (_, { extensions,
         const m = 'Fecha mal ingresada. ¿Alguna otra fecha y hora?'
         await flowDynamic(m);
         await handleHistory({ content: m, role: 'assistant' }, state);
-        
     }
 
+    const list2 = await getGoogleCalendarEvents(desiredDate,EMPRESA_ID)
+    console.log('list2', list2)
+    const list = listFake
+
+    const listParse = list2
+        .map(({ start, end }) => ({ fromDate: new Date(start), toDate: new Date(end) }));
+
+    console.log({ listParse })
+
+    
 
     const isDateAvailable = listParse.every(({ fromDate, toDate }) => !isWithinInterval(desiredDate, { start: fromDate, end: toDate }));
 
     if (!isDateAvailable) {
         const m = 'Lo siento, esa hora ya está reservada. ¿Alguna otra fecha y hora?';
-        await flowDynamic(m);
-        await handleHistory({ content: m, role: 'assistant' }, state);
+        return  fallBack(m);
+        //await handleHistory({ content: m, role: 'assistant' }, state);
         
+    }
+
+    if (!isWithinAvailability(desiredDate)){
+
+        const m = 'Lo siento, esa hora esta fuera de horario ¿Alguna otra fecha y hora?';
+        return  fallBack(m);
+        //await handleHistory({ content: m, role: 'assistant' }, state);
     }
 try{
 
@@ -103,8 +155,8 @@ try{
     }
 }catch(ex) {
     const m = 'Fecha mal ingresada. ¿Alguna otra fecha y hora?'
-    await flowDynamic(m);
-    await handleHistory({ content: m, role: 'assistant' }, state);
+    return  fallBack(m);
+    //await handleHistory({ content: m, role: 'assistant' }, state);
      
 
 }

@@ -6,6 +6,7 @@ import Usuario from '../user'
  * @returns 
  */
 const URL_FIREBASE_API = process.env.URL_FIREBASE_API
+const EMPRESA_ID = process.env.EMPRESA_ID
 
 const getCurrentCalendar = async (): Promise<{ start: string, end: string }[]> => {
     console.log('getCurrentCalendar', N8N_GET_FROM_CALENDAR)
@@ -73,7 +74,7 @@ const body = {
     }
 }
 
-async function insertEventToGoogleCalendar(payload: { name: string, email: string, startDate: Date, endData: Date, phone: string }) {
+async function insertEventToGoogleCalendar(payload: { name: string, email: string, startDate: Date, endDate: Date, phone: string }) {
   try {
       const url = `${URL_FIREBASE_API}/calendar/insert-event`
          
@@ -85,7 +86,7 @@ const  options = {
   headers: {
     "Content-Type": "application/json"
   },
-  body: JSON.stringify(payload)
+  body: JSON.stringify({empresaId: EMPRESA_ID, event: payload})
 };
 // The url of the server endpoint that handles the POST request
 // Calling the fetch function with the url and options as arguments
@@ -130,7 +131,6 @@ const data = await fetch(url, options)
 //     }
 // }
 
-
 /**
  * add to calendar
  * @param body 
@@ -145,9 +145,17 @@ const getPatientByPhone= async ( telefono:string, empresaId: string) => {
       },
       body: JSON.stringify({telefono, empresaId})
   }
-    const url = `${URL_FIREBASE_API}/pacientes/get-paciente-by-phone/${telefono}`
-      const paciente = await fetch(url, options)
-      return paciente
+    const url = `${URL_FIREBASE_API}/pacientes/get-paciente-by-phone`
+      const response = await fetch(url, options)
+      if (response.ok){
+
+        const paciente = await response.json()
+        console.log('paciente', paciente)
+        return paciente
+      }
+      else {
+        throw new Error("error la traer paciente"+ response)
+      }
   } catch (err) {
       console.log(`error: `, err)
   }

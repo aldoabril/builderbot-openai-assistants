@@ -44,12 +44,10 @@ const identifyByFhoneFlow = addKeyword(utils.setEvent('IDENTIFY_FLOW')).addActio
     const persona = await getPatientByPhone(telefono, EMPRESA_ID)
     console.log('persona identificada', persona)
     if (!persona) {
-
             await flowDynamic('Aun no eres cliente!') 
             return gotoFlow(registerFlow)
         }
     else {
-
         await state.update({ persona: persona })
         }
     //clearHistory(state)

@@ -73,7 +73,7 @@ const notClientFlowConfirm = addKeyword(EVENTS.ACTION).addAction(async (_, { flo
             name: persona.nombres+persona.apellidos,
             email: persona.email,
             startDate: utcToZonedTime(state.get('desiredDate'), TIME_ZONE),
-            endData: utcToZonedTime(addMinutes(state.get('desiredDate'), +DURATION_MEET), TIME_ZONE),
+            endDate: utcToZonedTime(addMinutes(state.get('desiredDate'), +DURATION_MEET), TIME_ZONE),
             phone: ctx.from
         }
     

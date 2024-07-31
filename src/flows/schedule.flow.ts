@@ -111,8 +111,8 @@ const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (_, { extensions,
         desiredDate = parse(date, 'yyyy/MM/dd HH:mm:ss', new Date());
     }catch(ex){
         const m = 'Fecha mal ingresada. ¿Alguna otra fecha y hora?'
-        await flowDynamic(m);
-        await handleHistory({ content: m, role: 'assistant' }, state);
+        return fallBack(m);
+        //await handleHistory({ content: m, role: 'assistant' }, state);
     }
 
     let list2 = [];
@@ -121,7 +121,8 @@ const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (_, { extensions,
          list2 = await getGoogleCalendarEvents(desiredDate,EMPRESA_ID)
     }catch(ex){
         const m = 'Hubo un fallo al procesar su solicitud. Por favor, inténtelo de nuevo más tarde.';
-        return fallBack(m);
+        return await flowDynamic(m);
+        //await handleHistory({ content: m, role: 'assistant' }, state);
         
     }
        
@@ -146,8 +147,8 @@ const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (_, { extensions,
     if (!isWithinAvailability(desiredDate)){
         console.log('ingresa aqui')
         const m = 'Lo siento, esa hora esta fuera de horario ¿Alguna otra fecha y hora?';
-        await flowDynamic(m);
-        await handleHistory({ content: m, role: 'assistant' }, state);
+        return fallBack(m);
+        //await handleHistory({ content: m, role: 'assistant' }, state);
         
         //return  fallBack(m);
         

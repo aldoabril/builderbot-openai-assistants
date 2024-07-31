@@ -3,6 +3,7 @@ import { clearHistory } from "../utils/handleHistory";
 import { addMinutes, format } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
 import { appToCalendar,insertEventToGoogleCalendar } from "src/services/calendar";
+import Usuario from "~/services/user";
 
 
 const DURATION_MEET = process.env.DURATION_MEET ?? 45
@@ -41,9 +42,6 @@ const notClientFlowConfirm = addKeyword(EVENTS.ACTION).addAction(async (_, { flo
         persona.nombres = ctx.body
         await state.update({ persona: persona })
         await flowDynamic(`Ultima pregunta ¿Cual es tu email?`)
-        
-    
-
 
 }).addAction({ capture: true }, async (ctx, { state, flowDynamic, fallBack,endFlow }) => {
         const persona = state.get('persona')    
@@ -56,7 +54,7 @@ const notClientFlowConfirm = addKeyword(EVENTS.ACTION).addAction(async (_, { flo
             name: persona.nombres,
             email: persona.email,
             startDate: utcToZonedTime(state.get('desiredDate'), TIME_ZONE),
-            endData: utcToZonedTime(addMinutes(state.get('desiredDate'), +DURATION_MEET), TIME_ZONE),
+            endDate: utcToZonedTime(addMinutes(state.get('desiredDate'), +DURATION_MEET), TIME_ZONE),
             phone: ctx.from
         }
         console.log('persona', dateObject)

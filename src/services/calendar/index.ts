@@ -21,57 +21,46 @@ const getCurrentCalendar = async (): Promise<{ start: string, end: string }[]> =
     return list
 }
 
-async function getGoogleCalendarEvents(fecha:Date, empresaId: string) {
-    try {
-        const url = `${URL_FIREBASE_API}/calendar/get-day-events`
-           
-        // Using the fetch API to send a POST request to a server
-// The data to be sent is stored in a variable called body
-const body = {
-    empresaId,
-    fecha
-  };
-  // The options object contains the method, headers, and body of the request
-  const  options = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(body)
-  };
-  // The url of the server endpoint that handles the POST request
-  // Calling the fetch function with the url and options as arguments
-  // The fetch function returns a promise that resolves to a response object
-  const data = await fetch(url, options)
-    .then(response => {
-      // Checking if the response status is OK (200)
-      if (response.ok) {
-        // Parsing the response body as JSON and returning it
-        return response.json();
-      } else {
-        // Throwing an error if the response status is not OK
-        throw new Error("Something went wrong");
-      }
-    })
-    .then(data => {
-      // Handling the data received from the server
-      console.log("The server responded with:", data);
-      return data.items.map((it)=> 
-        ({start:it.start?.dateTime, end:it.end?.dateTime})
-    )
-    })
-    .catch(error => {
-      // Handling the error if the request failed
-      console.error("The request failed with:", error);
-      throw new Error('Error al recuperar eventos de Google Calendar'+error);
-    });
-  
-        return data
-        
-    } catch (error) {
-        console.error('Error al procesar la solicitud:', error);
-        throw new Error('Error al procesar la solicitud');
+async function getGoogleCalendarEvents(fecha, empresaId) {
+  try {
+    const url = `${URL_FIREBASE_API}/calendar/get-day-events`;
+    
+    const body = {
+      empresaId,
+      fecha
+    };
+
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    };
+
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+      // Intentar leer el cuerpo de la respuesta como texto
+      const errorText = await response.text();
+      throw new Error(`Something went wrong: ${response.status} ${response.statusText}. Server message: ${errorText}`);
     }
+    const data = await response.json();
+    
+    console.log("The server responded with:", data);
+    if (data.items.length === 0) {
+      return []
+    }
+
+    return data.items.map((it) => ({
+      start: it.start?.dateTime,
+      end: it.end?.dateTime
+    }));
+
+  } catch (error) {
+    console.error("The request failed with:", error);
+    throw new Error('Error al recuperar eventos de Google Calendar: ' + error.message);
+  }
 }
 
 async function insertEventToGoogleCalendar(payload: { name: string, email: string, startDate: Date, endDate: Date, phone: string }) {

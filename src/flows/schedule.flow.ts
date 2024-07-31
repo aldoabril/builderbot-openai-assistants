@@ -115,17 +115,25 @@ const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (_, { extensions,
         await handleHistory({ content: m, role: 'assistant' }, state);
     }
 
-    const list2 = await getGoogleCalendarEvents(desiredDate,EMPRESA_ID)
-    console.log('list2', list2)
-    const list = listFake
+    let list2 = [];
+    try{
 
-    const listParse = list2
+         list2 = await getGoogleCalendarEvents(desiredDate,EMPRESA_ID)
+    }catch(ex){
+        const m = 'Hubo un fallo al procesar su solicitud. Por favor, inténtelo de nuevo más tarde.';
+        return fallBack(m);
+        
+    }
+       
+        //const list = listFake
+        const listParse = list2
         .map(({ start, end }) => ({ fromDate: new Date(start), toDate: new Date(end) }));
+        console.log( listParse )
 
-    console.log({ listParse })
+
 
     
-
+ console.log('desireddate', desiredDate)
     const isDateAvailable = listParse.every(({ fromDate, toDate }) => !isWithinInterval(desiredDate, { start: fromDate, end: toDate }));
 
     if (!isDateAvailable) {
@@ -136,9 +144,13 @@ const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (_, { extensions,
     }
 
     if (!isWithinAvailability(desiredDate)){
-
+        console.log('ingresa aqui')
         const m = 'Lo siento, esa hora esta fuera de horario ¿Alguna otra fecha y hora?';
-        return  fallBack(m);
+        await flowDynamic(m);
+        await handleHistory({ content: m, role: 'assistant' }, state);
+        
+        //return  fallBack(m);
+        
         //await handleHistory({ content: m, role: 'assistant' }, state);
     }
 try{

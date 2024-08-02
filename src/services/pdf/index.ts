@@ -1,5 +1,5 @@
 import { CHATPDF_API, CHATPDF_KEY, CHATPDF_SRC } from "src/config"
-import axios from "axios"
+
 /**
  * 
  * @returns 

@@ -37,7 +37,6 @@ async function getGoogleCalendarEvents(fecha, empresaId) {
       },
       body: JSON.stringify(body)
     };
-
     const response = await fetch(url, options);
 
     if (!response.ok) {

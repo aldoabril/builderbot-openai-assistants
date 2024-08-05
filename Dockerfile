@@ -5,7 +5,6 @@ WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 ENV PNPM_HOME=/usr/local/bin
-
 COPY . .
 
 COPY package*.json *-lock.yaml ./

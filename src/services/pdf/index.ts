@@ -1,8 +1,4 @@
 import { CHATPDF_API, CHATPDF_KEY, CHATPDF_SRC } from "src/config"
-<<<<<<< HEAD
-=======
-
->>>>>>> a764d0b8c2c42d0c9151a92cb433700460bbcc0f
 /**
  * 
  * @returns 

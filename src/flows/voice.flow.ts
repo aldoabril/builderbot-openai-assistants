@@ -14,9 +14,9 @@ const voiceFlow = addKeyword<BaileysProvider>(EVENTS.VOICE_NOTE)
         try{
             const ai = extensions.ai as AIClass
             const pathVoice = await provider.saveFile(ctx)
-            //const mp3Path = await processAudio(pathVoice)
-            //const text = await ai.voiceToText(mp3Path)
-            //await handleHistory({ content: text, role: 'user' }, state)
+            // const mp3Path = await processAudio(pathVoice)
+            // const text = await ai.voiceToText(mp3Path)
+            // await handleHistory({ content: text, role: 'user' }, state)
             return gotoFlow(welcomeFlow)
         }catch(e){
         console.log(`Err`,e)}

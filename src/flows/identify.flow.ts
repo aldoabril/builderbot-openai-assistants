@@ -4,7 +4,7 @@ import { flowSeller } from "./seller.flow";
 import { registerFlow } from "./register.flow";
 import { flowConfirm } from "./confirm.flow";
 import {getPatientByPhone} from "src/services/calendar"
-import { pseudoRandomBytes } from "crypto";
+//import { pseudoRandomBytes } from "crypto";
 
 const EMPRESA_ID = process.env.EMPRESA_ID || "hIntsAEzBwy8Hwi4DNcf"
 /**
